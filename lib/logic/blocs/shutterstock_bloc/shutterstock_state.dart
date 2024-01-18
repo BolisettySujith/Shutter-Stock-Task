@@ -9,7 +9,9 @@ abstract class ShutterStockState extends Equatable {
 
 class ShutterStockInitialState extends ShutterStockState {}
 
-class ShutterStockImagesLoading extends ShutterStockState {}
+class ShutterStockRemoteImagesLoading extends ShutterStockState {}
+
+class ShutterStockLocalImagesLoading extends ShutterStockState {}
 
 class ShutterStockImagesLoaded extends ShutterStockState {
   final ShutterStockModel shutterStockModel;
@@ -22,3 +24,10 @@ class ShutterStockImagesLoaded extends ShutterStockState {
 }
 
 class ShutterStockImagesLoadingFailed extends ShutterStockState {}
+
+class NoInternet extends ShutterStockState {}
+
+class ConnectionTimeout extends ShutterStockState {}
+
+
+class NoShutterStockImagesFound extends ShutterStockState {}

@@ -1,18 +1,26 @@
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'shutterstock_model.g.dart';
 
+@HiveType(typeId: 1)
 @JsonSerializable()
-class ShutterStockModel {
+class ShutterStockModel extends HiveObject {
+  @HiveField(1)
   @JsonKey(name: "page")
   int? page;
+  @HiveField(3)
   @JsonKey(name: "per_page")
   int? perPage;
+  @HiveField(5)
   @JsonKey(name: "total_count")
   int? totalCount;
+  @HiveField(7)
   @JsonKey(name: "search_id")
   String? searchId;
+  @HiveField(9)
   @JsonKey(name: "data")
   List<Datum>? data;
+  @HiveField(11)
   @JsonKey(name: "spellcheck_info")
   SpellcheckInfo? spellcheckInfo;
 
@@ -47,22 +55,31 @@ class ShutterStockModel {
   Map<String, dynamic> toJson() => _$ShutterStockModelToJson(this);
 }
 
+@HiveType(typeId: 2)
 @JsonSerializable()
 class Datum {
+  @HiveField(1)
   @JsonKey(name: "id")
   String? id;
+  @HiveField(3)
   @JsonKey(name: "aspect")
   double? aspect;
+  @HiveField(5)
   @JsonKey(name: "assets")
   Assets? assets;
+  @HiveField(7)
   @JsonKey(name: "contributor")
   Contributor? contributor;
+  @HiveField(9)
   @JsonKey(name: "description")
   String? description;
+  @HiveField(11)
   @JsonKey(name: "image_type")
   String? imageType;
+  @HiveField(13)
   @JsonKey(name: "has_model_release")
   bool? hasModelRelease;
+  @HiveField(15)
   @JsonKey(name: "media_type")
   String? mediaType;
 
@@ -103,20 +120,28 @@ class Datum {
   Map<String, dynamic> toJson() => _$DatumToJson(this);
 }
 
+@HiveType(typeId: 3)
 @JsonSerializable()
 class Assets {
+  @HiveField(1)
   @JsonKey(name: "preview")
   HugeThumb? preview;
+  @HiveField(3)
   @JsonKey(name: "small_thumb")
   HugeThumb? smallThumb;
+  @HiveField(5)
   @JsonKey(name: "large_thumb")
   HugeThumb? largeThumb;
+  @HiveField(7)
   @JsonKey(name: "huge_thumb")
   HugeThumb? hugeThumb;
+  @HiveField(9)
   @JsonKey(name: "mosaic")
   HugeThumb? mosaic;
+  @HiveField(11)
   @JsonKey(name: "preview_1000")
   HugeThumb? preview1000;
+  @HiveField(13)
   @JsonKey(name: "preview_1500")
   HugeThumb? preview1500;
 
@@ -154,12 +179,16 @@ class Assets {
   Map<String, dynamic> toJson() => _$AssetsToJson(this);
 }
 
+@HiveType(typeId: 4)
 @JsonSerializable()
 class HugeThumb {
+  @HiveField(1)
   @JsonKey(name: "height")
   int? height;
+  @HiveField(3)
   @JsonKey(name: "url")
   String? url;
+  @HiveField(5)
   @JsonKey(name: "width")
   int? width;
 
@@ -185,8 +214,10 @@ class HugeThumb {
   Map<String, dynamic> toJson() => _$HugeThumbToJson(this);
 }
 
+@HiveType(typeId: 5)
 @JsonSerializable()
 class Contributor {
+  @HiveField(1)
   @JsonKey(name: "id")
   String? id;
 
@@ -206,6 +237,7 @@ class Contributor {
   Map<String, dynamic> toJson() => _$ContributorToJson(this);
 }
 
+@HiveType(typeId: 6)
 @JsonSerializable()
 class SpellcheckInfo {
   SpellcheckInfo();

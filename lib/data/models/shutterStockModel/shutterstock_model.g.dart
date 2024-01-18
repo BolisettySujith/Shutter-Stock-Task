@@ -3,6 +3,265 @@
 part of 'shutterstock_model.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class ShutterStockModelAdapter extends TypeAdapter<ShutterStockModel> {
+  @override
+  final int typeId = 1;
+
+  @override
+  ShutterStockModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ShutterStockModel(
+      page: fields[1] as int?,
+      perPage: fields[3] as int?,
+      totalCount: fields[5] as int?,
+      searchId: fields[7] as String?,
+      data: (fields[9] as List?)?.cast<Datum>(),
+      spellcheckInfo: fields[11] as SpellcheckInfo?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ShutterStockModel obj) {
+    writer
+      ..writeByte(6)
+      ..writeByte(1)
+      ..write(obj.page)
+      ..writeByte(3)
+      ..write(obj.perPage)
+      ..writeByte(5)
+      ..write(obj.totalCount)
+      ..writeByte(7)
+      ..write(obj.searchId)
+      ..writeByte(9)
+      ..write(obj.data)
+      ..writeByte(11)
+      ..write(obj.spellcheckInfo);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ShutterStockModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class DatumAdapter extends TypeAdapter<Datum> {
+  @override
+  final int typeId = 2;
+
+  @override
+  Datum read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Datum(
+      id: fields[1] as String?,
+      aspect: fields[3] as double?,
+      assets: fields[5] as Assets?,
+      contributor: fields[7] as Contributor?,
+      description: fields[9] as String?,
+      imageType: fields[11] as String?,
+      hasModelRelease: fields[13] as bool?,
+      mediaType: fields[15] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Datum obj) {
+    writer
+      ..writeByte(8)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(3)
+      ..write(obj.aspect)
+      ..writeByte(5)
+      ..write(obj.assets)
+      ..writeByte(7)
+      ..write(obj.contributor)
+      ..writeByte(9)
+      ..write(obj.description)
+      ..writeByte(11)
+      ..write(obj.imageType)
+      ..writeByte(13)
+      ..write(obj.hasModelRelease)
+      ..writeByte(15)
+      ..write(obj.mediaType);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DatumAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class AssetsAdapter extends TypeAdapter<Assets> {
+  @override
+  final int typeId = 3;
+
+  @override
+  Assets read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Assets(
+      preview: fields[1] as HugeThumb?,
+      smallThumb: fields[3] as HugeThumb?,
+      largeThumb: fields[5] as HugeThumb?,
+      hugeThumb: fields[7] as HugeThumb?,
+      mosaic: fields[9] as HugeThumb?,
+      preview1000: fields[11] as HugeThumb?,
+      preview1500: fields[13] as HugeThumb?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Assets obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(1)
+      ..write(obj.preview)
+      ..writeByte(3)
+      ..write(obj.smallThumb)
+      ..writeByte(5)
+      ..write(obj.largeThumb)
+      ..writeByte(7)
+      ..write(obj.hugeThumb)
+      ..writeByte(9)
+      ..write(obj.mosaic)
+      ..writeByte(11)
+      ..write(obj.preview1000)
+      ..writeByte(13)
+      ..write(obj.preview1500);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AssetsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class HugeThumbAdapter extends TypeAdapter<HugeThumb> {
+  @override
+  final int typeId = 4;
+
+  @override
+  HugeThumb read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return HugeThumb(
+      height: fields[1] as int?,
+      url: fields[3] as String?,
+      width: fields[5] as int?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, HugeThumb obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(1)
+      ..write(obj.height)
+      ..writeByte(3)
+      ..write(obj.url)
+      ..writeByte(5)
+      ..write(obj.width);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HugeThumbAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ContributorAdapter extends TypeAdapter<Contributor> {
+  @override
+  final int typeId = 5;
+
+  @override
+  Contributor read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Contributor(
+      id: fields[1] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Contributor obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(1)
+      ..write(obj.id);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContributorAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class SpellcheckInfoAdapter extends TypeAdapter<SpellcheckInfo> {
+  @override
+  final int typeId = 6;
+
+  @override
+  SpellcheckInfo read(BinaryReader reader) {
+    return SpellcheckInfo();
+  }
+
+  @override
+  void write(BinaryWriter writer, SpellcheckInfo obj) {
+    writer.writeByte(0);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SpellcheckInfoAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

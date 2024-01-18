@@ -5,14 +5,24 @@ abstract class ShutterStockEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class GetShutterStockImagesEvent extends ShutterStockEvent {
+class GetShutterStockAPIImagesEvent extends ShutterStockEvent {
   final String? searchQuery;
 
-  GetShutterStockImagesEvent({this.searchQuery});
+  GetShutterStockAPIImagesEvent({this.searchQuery});
 
   @override
   List<Object?> get props => [searchQuery];
 }
+
+class GetShutterStockLocalImagesEvent extends ShutterStockEvent {
+  final String? searchQuery;
+
+  GetShutterStockLocalImagesEvent({this.searchQuery});
+
+  @override
+  List<Object?> get props => [searchQuery];
+}
+
 
 //TODO: Set Asset types
 // TODO 1: Preview
