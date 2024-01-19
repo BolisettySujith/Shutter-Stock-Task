@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shutter_stocks_task/data/models/shutterStockModel/shutterstock_model.dart';
+import 'data/repository/shutterstock_repository.dart';
+import 'logic/blocs/shutterstock_bloc/shutterstock_bloc.dart';
+import 'logic/blocs/shutterstock_bloc/shutterstock_event.dart';
 import 'presentation/pages/home_page.dart';
 import 'package:hive/hive.dart';
 
@@ -37,7 +41,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: BlocProvider<ShutterStockBloc>(
+        create: (context) => ShutterStockBloc(ShutterStockRepository())..add(GetShutterStockAPIImagesEvent()),
+        child: const HomePage(),
+      )
     );
   }
 }

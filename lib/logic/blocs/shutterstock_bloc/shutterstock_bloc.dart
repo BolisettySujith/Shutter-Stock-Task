@@ -4,7 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:shutter_stocks_task/data/models/shutterStockModel/shutterstock_model.dart';
 import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_event.dart';
 import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_state.dart';
+import 'package:stream_transform/stream_transform.dart';
 import '../../../data/repository/shutterstock_repository.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+
+
+EventTransformer<E> throttleDroppable<E>(Duration duration) {
+  return (events, mapper) {
+    return droppable<E>().call(events.throttle(duration), mapper);
+  };
+}
 
 class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
   
@@ -13,18 +22,51 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
   
   ShutterStockBloc(this._shutterStockRepository) : super(ShutterStockInitialState()){
    on<GetShutterStockAPIImagesEvent>((event, emit) async {
-     emit(ShutterStockRemoteImagesLoading());
+     if (_pageNo==1) emit(ShutterStockRemoteImagesLoading());
      try {
        Map<String, dynamic> params = {
          'page' : _pageNo,
        };
+
+       // Checks if there is any search query given by the user
        if(event.searchQuery != null) params["query"] = event.searchQuery;
 
+       // Connects with the Shutter stock Repository to get the data from the API
        final ShutterStockModel shutterStockModel = await _shutterStockRepository.getShutterStockImagesFromAPI(params);
-       _pageNo += 1;
-       emit(ShutterStockImagesLoaded(shutterStockModel));
+       final List<Datum>? imagesData = shutterStockModel.data;
+       print("$_pageNo : ${imagesData?.length}");
 
+       // Check whether the state is ShutterStockImagesLoaded and page no is not 1
+       // if the above condition satisfies, it proceeds to send the combined
+       // data back to the grid screen and increments the page no
+       if(state is ShutterStockImagesLoaded && _pageNo != 1) {
+         ShutterStockImagesLoaded shutterStockImagesLoaded = state as ShutterStockImagesLoaded;
+         _pageNo += 1;
+         return emit(shutterStockImagesLoaded.copyWith(
+           imagesData: List.of(shutterStockImagesLoaded.imagesData)..addAll(imagesData ?? <Datum>[])
+         ));
+       }
+
+       // This will only execute when the page no is 1, and
+       // > If the the api didn't response any data
+       // it will show NoShutterStockImagesFound screen
+       // > Else it will increment the page no and send the images data
+       // back to the grid screen
+       if(imagesData == null) {
+         emit(NoShutterStockImagesFound());
+       } else {
+         _pageNo += 1;
+         emit(ShutterStockImagesLoaded(imagesData: imagesData));
+       }
      } on DioException catch (e) {
+       // > If
+       // If Connection timeout happened in the request, it will show an
+       // Connection time out screen
+       // --------------------------
+       // > Else If
+       // If the exception is an connection error it indicates there is not
+       // internet connection so it will try to get the data from the local
+       // hive database of that particular page
        if(DioExceptionType.receiveTimeout == e.type || DioExceptionType.connectionTimeout == e.type) {
          if (kDebugMode) {
            print("Connection timeout");
@@ -36,30 +78,51 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
          }
          add(GetShutterStockLocalImagesEvent());
        }
-       // print(e);
-       // emit(NoInternet());
      } catch (e) {
        if (kDebugMode) {
          print(e);
        }
        emit(ShutterStockImagesLoadingFailed());
      }
-   });
+   },
+   transformer: throttleDroppable(const Duration(milliseconds: 100)),
+   );
 
    on<GetShutterStockLocalImagesEvent>((event, emit) async {
-     emit(ShutterStockLocalImagesLoading());
+     if (_pageNo==1) emit(ShutterStockLocalImagesLoading());
      try {
        Map<String, dynamic> params = {
          'page' : _pageNo,
        };
+       // Checks if there is any search query given by the user
        if(event.searchQuery != null) params["query"] = event.searchQuery;
 
+       // Connects with the Shutter stock Repository to get the data from the local hive data base
        final ShutterStockModel? shutterStockModel = await _shutterStockRepository.getShutterStockImagesFromLocal(params);
-       if(shutterStockModel == null) {
+       final List<Datum>? imagesData = shutterStockModel?.data;
+       print("$_pageNo : ${imagesData?.length}");
+
+       // Check whether the state is ShutterStockImagesLoaded and page no is not 1
+       // if the above condition satisfies, it proceeds to send the combined
+       // data back to the grid screen and increments the page no
+       if(state is ShutterStockImagesLoaded && _pageNo != 1) {
+         ShutterStockImagesLoaded shutterStockImagesLoaded = state as ShutterStockImagesLoaded;
+         _pageNo += 1;
+         return emit(shutterStockImagesLoaded.copyWith(
+             imagesData: List.of(shutterStockImagesLoaded.imagesData)..addAll(imagesData ?? <Datum>[])
+         ));
+       }
+
+       // This will only execute when the page no is 1, and
+       // > If the the api didn't response any data
+       // it will show NoShutterStockImagesFound screen
+       // > Else it will increment the page no and send the images data
+       // back to the grid screen
+       if(imagesData == null) {
          emit(NoShutterStockImagesFound());
        } else {
          _pageNo += 1;
-         emit(ShutterStockImagesLoaded(shutterStockModel));
+         emit(ShutterStockImagesLoaded(imagesData: imagesData));
        }
      } catch (e) {
        if (kDebugMode) {
@@ -67,6 +130,8 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
        }
        emit(ShutterStockImagesLoadingFailed());
      }
-   });
+   },
+   transformer: throttleDroppable(const Duration(milliseconds: 100)),
+   );
   }
 }

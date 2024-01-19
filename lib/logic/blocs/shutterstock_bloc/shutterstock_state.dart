@@ -14,13 +14,27 @@ class ShutterStockRemoteImagesLoading extends ShutterStockState {}
 class ShutterStockLocalImagesLoading extends ShutterStockState {}
 
 class ShutterStockImagesLoaded extends ShutterStockState {
-  final ShutterStockModel shutterStockModel;
+  // final ShutterStockModel shutterStockModel;
+  ShutterStockImagesLoaded({
+    // this.shutterStockModel,
+    this.imagesData = const <Datum>[],
+  });
+  
+  final List<Datum> imagesData;
 
-  ShutterStockImagesLoaded(this.shutterStockModel);
+
+  
+  ShutterStockImagesLoaded copyWith ({
+      List<Datum>? imagesData
+  }) {
+    return ShutterStockImagesLoaded(
+      imagesData: imagesData ?? this.imagesData
+    );
+  }
 
   @override
   // TODO: implement props
-  List<Object?> get props => [shutterStockModel];
+  List<Datum> get props => imagesData ?? [];
 }
 
 class ShutterStockImagesLoadingFailed extends ShutterStockState {}
