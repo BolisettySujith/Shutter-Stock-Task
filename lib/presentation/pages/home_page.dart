@@ -14,6 +14,18 @@ import 'package:shutter_stocks_task/res/components/image_thumbnail_components.da
 import 'package:shutter_stocks_task/res/components/snack_bar_components.dart';
 import 'package:shutter_stocks_task/res/helpers/internet_checker.dart';
 
+/// `HomePage`
+/// This is the main screen of the app where it show's the following:
+/// AppBar:
+///   App bar contains the PopUpMenuItems which helps in selecting the image asset type
+/// Body:
+///   It contains a ListView.builder to show all the images from the shutter stock api
+///   and changes the the image asset type based on the
+///   user preference in the app bar popUpMenuItems
+/// It contains a Pull To Refresh feature which refreshes the whole screen
+/// It also contains a infinite scrolling features,
+/// ie. it loads more images when the user reached the end of the screen
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -31,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     _scrollController.addListener(_onScroll);
     InternetChecker.observeNetwork(
         context: context,
-        callback: () => BlocProvider.of<ShutterStockBloc>(context).add(ResetShutterStockImages())
+        callback: () => BlocProvider.of<ShutterStockBloc>(context).add(ResetShutterStockImagesEvent())
     );
   }
 
@@ -56,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> refreshData() async {
-    BlocProvider.of<ShutterStockBloc>(context).add(ResetShutterStockImages());
+    BlocProvider.of<ShutterStockBloc>(context).add(ResetShutterStockImagesEvent());
   }
 
   @override

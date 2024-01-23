@@ -5,26 +5,32 @@ import 'package:flutter/foundation.dart';
 import 'package:shutter_stocks_task/data/models/shutterStockModel/shutterstock_model.dart';
 import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_event.dart';
 import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_state.dart';
-import 'package:shutter_stocks_task/res/app_urls.dart';
+import 'package:shutter_stocks_task/res/app_constants.dart';
 import 'package:shutter_stocks_task/res/helpers/internet_checker.dart';
 import 'package:stream_transform/stream_transform.dart';
 import '../../../data/repository/shutterstock_repository.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 
+/// Reduces the rate that events are emitted to at most once per duration.
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {
     return droppable<E>().call(events.throttle(duration), mapper);
   };
 }
 
+/// `ShutterStockBloc`
+/// Takes a Stream of `ShutterStockEvent` as input and transforms them into a Stream of `ShutterStockState` as output.
 class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
   
   final ShutterStockRepository _shutterStockRepository;
   int _pageNo = 1;
   
   ShutterStockBloc(this._shutterStockRepository) : super(ShutterStockInitialState()){
-   on<GetShutterStockAPIImagesEvent>((event, emit) async {
+
+   /// When a `GetShutterStockAPIImagesEvent` triggered is called the below will be executed and emits a `ShutterStockState`
+    /// This below logic triggered when the app need to fetch the data from shutter stock api
+    on<GetShutterStockAPIImagesEvent>((event, emit) async {
      if (_pageNo==1) emit(ShutterStockRemoteImagesLoading());
 
      final connectivityResult = await (Connectivity().checkConnectivity());
@@ -40,7 +46,7 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
        try {
          Map<String, dynamic> params = {
            'page' : _pageNo,
-           'per_page' : AppUrls.imagesPerPage
+           'per_page' : AppConstants.imagesPerPage
          };
 
          // Checks if there is any search query given by the user
@@ -110,15 +116,17 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
      }
 
    },
-   transformer: throttleDroppable(const Duration(milliseconds: 100)),
-   );
+     transformer: throttleDroppable(const Duration(milliseconds: 100)),
+    );
 
+   /// When a `GetShutterStockLocalImagesEvent` triggered is called the below will be executed and emits a `ShutterStockState`
+   /// This below logic triggered when the app need to fetch the data from the cache
    on<GetShutterStockLocalImagesEvent>((event, emit) async {
      if (_pageNo==1) emit(ShutterStockLocalImagesLoading());
      try {
        Map<String, dynamic> params = {
          'page' : _pageNo,
-         'per_page' : AppUrls.imagesPerPage
+         'per_page' : AppConstants.imagesPerPage
        };
        // Checks if there is any search query given by the user
        if(event.searchQuery != null) params["query"] = event.searchQuery;
@@ -130,7 +138,6 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
          print("$_pageNo : ${imagesData?.length}");
          print(state);
        }
-
 
        // Check whether the state is ShutterStockImagesLoaded and page no is not 1
        // if the above condition satisfies, it proceeds to send the combined
@@ -171,26 +178,19 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
        emit(ShutterStockImagesLoadingFailed());
      }
    },
-   transformer: throttleDroppable(const Duration(milliseconds: 100)),
+    transformer: throttleDroppable(const Duration(milliseconds: 100)),
    );
 
-   on<ChangeAssetTypeEvent>((event, emit) async {
-     if(state is ShutterStockImagesLoaded && _pageNo != 1) {
-       ShutterStockImagesLoaded shutterStockImagesLoaded = state as ShutterStockImagesLoaded;
-       return emit(shutterStockImagesLoaded.copyWith(
-           imagesData: shutterStockImagesLoaded.imagesData,
-           imgAssetType: event.assetType,
-       ));
-     }
-   });
-
-   on<ResetShutterStockImages>((event, emit) async {
+   /// When a `ResetShutterStockImagesEvent` triggered is called the below will be executed and emits a `ShutterStockState`
+   /// This below logic triggered when PullToRefresh is called in the home page
+   /// It will get the new data from the api and resets the _pageno to 1
+   on<ResetShutterStockImagesEvent>((event, emit) async {
      _pageNo = 1;
      if (_pageNo==1) emit(ShutterStockRemoteImagesLoading());
      try {
        Map<String, dynamic> params = {
          'page' : _pageNo,
-         'per_page' : AppUrls.imagesPerPage
+         'per_page' : AppConstants.imagesPerPage
        };
 
        // Checks if there is any search query given by the user
@@ -258,5 +258,18 @@ class ShutterStockBloc extends Bloc<ShutterStockEvent, ShutterStockState>{
    },
      transformer: throttleDroppable(const Duration(milliseconds: 100)),
    );
+
+   /// When a `ChangeAssetTypeEvent` triggered is called the below will be executed and emits a `ShutterStockState`
+   /// This below logic changes the asset type that was showing in the home page
+   on<ChangeAssetTypeEvent>((event, emit) async {
+     if(state is ShutterStockImagesLoaded && _pageNo != 1) {
+       ShutterStockImagesLoaded shutterStockImagesLoaded = state as ShutterStockImagesLoaded;
+       return emit(shutterStockImagesLoaded.copyWith(
+         imagesData: shutterStockImagesLoaded.imagesData,
+         imgAssetType: event.assetType,
+       ));
+     }
+   });
+
   }
 }

@@ -6,6 +6,12 @@ import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_s
 import 'package:shutter_stocks_task/res/app_colors.dart';
 import 'package:shutter_stocks_task/res/app_constants.dart';
 
+/// `PopUpMenuAppBarHomePage`
+/// This stateful widget is used in the home page app bar for showing the PopUpMenuItems
+/// This PopUpMenuItems contains different types of Image Asset types
+/// User can choose any of the asset type, based on his preference the ListView.builder
+/// in the home page shows assets of that particular preferred asset type
+
 class PopUpMenuAppBarHomePage extends StatefulWidget {
   const PopUpMenuAppBarHomePage({super.key});
 

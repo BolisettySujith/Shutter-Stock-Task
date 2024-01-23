@@ -1,5 +1,8 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+/// This  `AppConstants` class contains all the constant values used through out the app
+/// Eg: Texts, API keys, Durations,...etc
+
 class AppConstants {
   // API AUTH Key
   static final String apiAuthKey = "Basic ${dotenv.env["SHUTTER_STOCK_API_TOKEN"]}";
@@ -36,7 +39,13 @@ class AppConstants {
   static const String connectionTimeOutSnackBarContent = "Connection Timeout...";
   static const String noInternetSnackBarContent = "Offline Mode: No Internet\nPlease TURN ON Internet to get more images";
   static const String internetConnectedSnackBarContent = "Internet Connected";
+
+  // API get images per request
+  static const int imagesPerPage = 10;
 }
+
+/// There are 7 types of images resolutions that we get from the shutter stock api
+/// This enum helps in accessing those asset types
 
 enum ImgAssetTypes {
   preview,

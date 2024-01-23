@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shutter_stocks_task/res/app_constants.dart';
 
+/// `LocalImagesDataLoadingPage`
+/// this stateless widget is shown when the app fetches the data from the hive database
 class LocalImagesDataLoadingPage extends StatelessWidget {
   const LocalImagesDataLoadingPage({super.key});
 

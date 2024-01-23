@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shutter_stocks_task/res/app_constants.dart';
 
+/// `ApiImagesDataLoadingPage`
+/// this stateless widget is shown when the app fetches the data from the shutter stock api
 class ApiImagesDataLoadingPage extends StatelessWidget {
   const ApiImagesDataLoadingPage({super.key});
 

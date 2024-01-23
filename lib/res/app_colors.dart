@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// This  `AppColors` class contains all the colors that was used in the app
 class AppColors {
   // Snack bar colors
   static const Color greenSnackBarBackGroundColor = Colors.green;

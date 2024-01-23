@@ -3,6 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:shutter_stocks_task/res/app_constants.dart';
 import 'package:shutter_stocks_task/res/app_urls.dart';
 
+/// `ShutterStockAPI`
+/// The ShutterStockAPI is the singleton instance
+/// It contains the Dio package initialization with the required baseUrl,
+/// required headers and other pre-requisites
 class ShutterStockAPI {
   late Dio _dio;
   static bool isInitialized = false;
@@ -44,6 +48,11 @@ class ShutterStockAPI {
     isInitialized = true;
   }
 
+  /// `getRawSearchImages`
+  /// Makes an api call to the server based on the qParams and the endpoint
+  /// It also checks the status of the api response and
+  /// returns the raw json data back to the `ShutterStockRepository`
+  ///
   Future<dynamic> getRawSearchImages(Map<String, dynamic> qParams) async {
     await _initializeAPI();
     dynamic rawImages = {};

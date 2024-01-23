@@ -5,7 +5,9 @@ import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_e
 import 'package:shutter_stocks_task/res/app_colors.dart';
 import 'package:shutter_stocks_task/res/app_constants.dart';
 
+/// `SnackBarComponents` class contains all the snack bar's used in the app
 class SnackBarComponents {
+  /// `somethingWentWrongSnackBar` pop's up when something went wrong while making an api call
   static void somethingWentWrongSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -18,6 +20,7 @@ class SnackBarComponents {
     );
   }
 
+  /// `connectionTimeOutSnackBar` pop's up when timeout occurred while making an api call
   static void connectionTimeOutSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -47,6 +50,7 @@ class SnackBarComponents {
     );
   }
 
+  /// `noInternetSnackBar` pop's up when there is no internet connections in the app
   static void noInternetSnackBar(BuildContext context) {
     SnackBar sb = const SnackBar(
       content: Text(AppConstants.noInternetSnackBarContent),
@@ -59,6 +63,7 @@ class SnackBarComponents {
     ScaffoldMessenger.of(context).showSnackBar(sb);
   }
 
+  // `internetConnectedSnackBar` pop's up when the internet is reconnected
   static void internetConnectedSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
