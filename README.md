@@ -1,8 +1,8 @@
-# Shutter Stock Viewer
+# Shutter Stock Task
 
+### **Requirements**
 - Statemanagement used: **BLoC**
-
-## **Requirements**
+- Database used: **Hive**
 - Shutter Stock API
   - The API documentation is here: [Shutterstock.com](https://developers.shutterstock.com/api/v2)
 
