@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:shutter_stocks_task/data/models/shutterStockModel/shutterstock_model.dart';
+import 'package:shutter_stocks_task/res/app_constants.dart';
 
 abstract class ShutterStockState extends Equatable {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -18,23 +18,28 @@ class ShutterStockImagesLoaded extends ShutterStockState {
   ShutterStockImagesLoaded({
     // this.shutterStockModel,
     this.imagesData = const <Datum>[],
+    this.imgAssetType = ImgAssetTypes.preview,
+    this.hasMoreImageData = true,
   });
   
   final List<Datum> imagesData;
-
-
+  final ImgAssetTypes imgAssetType;
+  final bool hasMoreImageData;
   
   ShutterStockImagesLoaded copyWith ({
-      List<Datum>? imagesData
+      List<Datum>? imagesData,
+      ImgAssetTypes? imgAssetType,
+      bool? hasMoreImageData
   }) {
     return ShutterStockImagesLoaded(
-      imagesData: imagesData ?? this.imagesData
+      imagesData: imagesData ?? this.imagesData,
+      imgAssetType: imgAssetType ?? this.imgAssetType,
+      hasMoreImageData: hasMoreImageData ?? this.hasMoreImageData
     );
   }
 
   @override
-  // TODO: implement props
-  List<Datum> get props => imagesData ?? [];
+  List<Object?> get props => [imagesData, imgAssetType, hasMoreImageData];
 }
 
 class ShutterStockImagesLoadingFailed extends ShutterStockState {}

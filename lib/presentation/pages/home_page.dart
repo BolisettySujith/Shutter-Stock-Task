@@ -1,9 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_bloc.dart';
 import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_event.dart';
 import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_state.dart';
+import 'package:shutter_stocks_task/presentation/pages/api_images_data_loading_page.dart';
+import 'package:shutter_stocks_task/presentation/pages/local_images_data_loading_page.dart';
+import 'package:shutter_stocks_task/presentation/pages/no_data_page.dart';
+import 'package:shutter_stocks_task/presentation/widgets/pop_up_menu_app_bar_home_page.dart';
+import 'package:shutter_stocks_task/res/app_constants.dart';
+import 'package:shutter_stocks_task/res/components/image_thumbnail_components.dart';
+import 'package:shutter_stocks_task/res/components/snack_bar_components.dart';
+import 'package:shutter_stocks_task/res/helpers/internet_checker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,6 +29,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    InternetChecker.observeNetwork(
+        context: context,
+        callback: () => BlocProvider.of<ShutterStockBloc>(context).add(ResetShutterStockImages())
+    );
   }
 
   @override
@@ -38,169 +51,114 @@ class _HomePageState extends State<HomePage> {
   void _onScroll() {
     if (_isBottom) {
       // User has reached the bottom of the list, trigger an event to load more data
-      // BlocProvider.of<ShutterStockBloc>(context).add(GetShutterStockAPIImagesEvent());
+      BlocProvider.of<ShutterStockBloc>(context).add(GetShutterStockAPIImagesEvent());
     }
   }
 
+  Future<void> refreshData() async {
+    BlocProvider.of<ShutterStockBloc>(context).add(ResetShutterStockImages());
+  }
 
   @override
   Widget build(BuildContext context) {
+    GlobalKey<RefreshIndicatorState> refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Shutter Stock Image Viewer"),
-        elevation: 2,
+        title: const Text(AppConstants.appBarTitleHomePage),
+        elevation: 10,
+        actions: const [
+          PopUpMenuAppBarHomePage()
+        ],
       ),
       body: BlocConsumer<ShutterStockBloc, ShutterStockState>(
         listener: (context, shutterState){
           // Show's this screen when error occurred in the process
           if(shutterState is ShutterStockImagesLoadingFailed) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Something went wrong"),
-                  duration: Duration(seconds: 2),
-                  backgroundColor: Colors.green,
-                  behavior: SnackBarBehavior.floating,
-                )
-            );
+            SnackBarComponents.somethingWentWrongSnackBar(context);
           }
+          // Show's this screen when there is a connection time out
           if(shutterState is ConnectionTimeout) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Connection Timeout...",
-                        style: TextStyle(
-                          color: Colors.white
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          BlocProvider.of<ShutterStockBloc>(context).add(GetShutterStockAPIImagesEvent());
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        },
-                        child: const Icon(Icons.refresh),
-                      )
-                    ],
-                  ),
-                  duration: const Duration(days: 1),
-                  backgroundColor: Colors.grey,
-                  behavior: SnackBarBehavior.floating,
-                )
-            );
+            SnackBarComponents.connectionTimeOutSnackBar(context);
           }
-          // Show's this circular loading screen when the app initially fetching the data
+          // Show's this screen when there is no internet
+          if(shutterState is NoInternet) {
+            SnackBarComponents.noInternetSnackBar(context);
+          }
+
         },
         builder: (context, shutterState){
           // Show's this screen when images loaded successfully
           if(shutterState is ShutterStockImagesLoaded) {
-            print("Total Images in Grid : ${shutterState.imagesData.length.toString()}");
-            return SafeArea(
-              child: GridView.builder(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Number of columns
-                  crossAxisSpacing: 8.0, // Spacing between columns
-                  mainAxisSpacing: 8.0, // Spacing between rows
-                ),
-                itemCount: shutterState.imagesData.length+1,
-                itemBuilder: (BuildContext context, int index) {
-                  final imageUrl = shutterState.imagesData[index].assets?.largeThumb?.url;
-                  if((index == shutterState.imagesData.length) || (index == shutterState.imagesData.length+1)) {
-                    return Container(
-                      color: Colors.black45,
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
-                  return imageUrl != null
-                  ? Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) => const SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Icon(Icons.downloading)
-                      ),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
-                    ),
-                  )
-                      : Container();
-                },
-              )
-            );
-          }
-          // Show's this screen when there is no internet
-          if(shutterState is NoInternet) {
-            return const SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Text("No Internet"),
-                  ),
-                )
-            );
-          }
-          // Show's this screen when the local data is begin loading
-          if(shutterState is ShutterStockLocalImagesLoading) {
-            return const SafeArea(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: CircularProgressIndicator(),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text("Loading images from cache")
-                  ],
-                ),
-              ),
-            );
-          }
-          // Show's this screen when there are not Stock images found
-          if(shutterState is NoShutterStockImagesFound) {
-            return const SafeArea(
-              child: Center(
-                child: Text("No data Found from the cache"),
-              ),
-            );
-          }
-          // Show's this screen when there is a connection time out
+            if (kDebugMode) {
+              print("Total Images in Grid : ${shutterState.imagesData.length.toString()}");
+            }
 
-          return const SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: CircularProgressIndicator(),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text("Loading images from API")
-                ],
-              ),
-            ),
-          );
+            return RefreshIndicator(
+                key: refreshIndicatorKey,
+                onRefresh: () => refreshData(),
+                child: SafeArea(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: (shutterState.imagesData.length+ (shutterState.hasMoreImageData ? 1 : 0)),
+                      itemBuilder: (BuildContext context, int index) {
+                        if((index == shutterState.imagesData.length && shutterState.hasMoreImageData == true)) {
+                          return ImageThumbnailComponents.newDataLoadingIndicator;
+                        }
+
+                        String? imageUrl = "";
+                        switch(shutterState.imgAssetType) {
+                          case ImgAssetTypes.preview :
+                            imageUrl = shutterState.imagesData[index].assets?.preview?.url;
+                            break;
+                          case ImgAssetTypes.smallThumb:
+                            imageUrl = shutterState.imagesData[index].assets?.smallThumb?.url;
+                            break;
+                          case ImgAssetTypes.largeThumb:
+                            imageUrl = shutterState.imagesData[index].assets?.largeThumb?.url;
+                            break;
+                          case ImgAssetTypes.huge_thumb:
+                            imageUrl = shutterState.imagesData[index].assets?.hugeThumb?.url;
+                            break;
+                          case ImgAssetTypes.mosaic:
+                            imageUrl = shutterState.imagesData[index].assets?.mosaic?.url;
+                            break;
+                          case ImgAssetTypes.preview_1000:
+                            imageUrl = shutterState.imagesData[index].assets?.preview1000?.url;
+                            break;
+                          case ImgAssetTypes.preview_1500:
+                            imageUrl = shutterState.imagesData[index].assets?.preview1500?.url;
+                            break;
+                        }
+
+                        return imageUrl != null
+                          ? Container(
+                            margin: const EdgeInsets.all(8),
+                            height: 150,
+                            width: 50,
+                            decoration: ImageThumbnailComponents.imageContainerBoxDecoration,
+                            child: CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) => ImageThumbnailComponents.imageContainerPlaceholder,
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
+                            ),
+                          )
+                          : Container();
+                      },
+                    )
+                ),
+            );
+          }
+
+          // Show's this screen when there are not Stock images found
+          if(shutterState is NoShutterStockImagesFound) return const NoDataFoundPage();
+
+          // Show's this screen when the local data is begin loading
+          if(shutterState is ShutterStockLocalImagesLoading) return const LocalImagesDataLoadingPage();
+
+          // Show's this circular loading screen when the app initially fetching the data
+          return const ApiImagesDataLoadingPage();
         },
       ),
     );

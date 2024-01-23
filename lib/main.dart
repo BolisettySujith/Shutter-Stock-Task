@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shutter_stocks_task/data/models/shutterStockModel/shutterstock_model.dart';
+import 'package:shutter_stocks_task/res/app_constants.dart';
 import 'data/repository/shutterstock_repository.dart';
 import 'logic/blocs/shutterstock_bloc/shutterstock_bloc.dart';
 import 'logic/blocs/shutterstock_bloc/shutterstock_event.dart';
@@ -36,9 +37,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: AppConstants.appTitle,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyanAccent),
         useMaterial3: true,
       ),
       home: BlocProvider<ShutterStockBloc>(

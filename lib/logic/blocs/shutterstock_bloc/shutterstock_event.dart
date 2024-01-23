@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:shutter_stocks_task/res/app_constants.dart';
 
 abstract class ShutterStockEvent extends Equatable {
   @override
@@ -23,12 +24,20 @@ class GetShutterStockLocalImagesEvent extends ShutterStockEvent {
   List<Object?> get props => [searchQuery];
 }
 
+class ChangeAssetTypeEvent extends ShutterStockEvent {
+  final ImgAssetTypes assetType;
 
-//TODO: Set Asset types
-// TODO 1: Preview
-// TODO 2: Small Thumb
-// TODO 3: Large Thumb
-// TODO 4: Huge Thumb
-// TODO 5: Mosaic
-// TODO 6: Preview 1000
-// TODO 7: Preview 1500
+  ChangeAssetTypeEvent(this.assetType);
+
+  @override
+  List<Object?> get props => [assetType];
+}
+
+class ResetShutterStockImages extends ShutterStockEvent {
+  final String? searchQuery;
+
+  ResetShutterStockImages({this.searchQuery});
+
+  @override
+  List<Object?> get props => [searchQuery];
+}

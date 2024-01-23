@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shutter_stocks_task/res/app_constants.dart';
 import 'package:shutter_stocks_task/res/app_urls.dart';
 
@@ -14,7 +15,6 @@ class ShutterStockAPI {
 
   //Singleton instance
   static ShutterStockAPI get instance => _instance;
-
 
   Future<void> _initializeAPI() async {
     if(!isInitialized) {
@@ -36,10 +36,10 @@ class ShutterStockAPI {
           ),
         ]);
       } catch (e) {
-        print("Erro: From repository file");
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
       }
-
     }
     isInitialized = true;
   }
@@ -51,7 +51,22 @@ class ShutterStockAPI {
         AppUrls.searchImageEndPoint,
         queryParameters: qParams
     );
-    rawImages = response.data;
+
+    if (response.statusCode! >= 200 && response.statusCode! < 300) {
+      rawImages = response.data;
+    } else if (response.statusCode == 400) {
+      if (kDebugMode) {
+        print("Bad request");
+      }
+    } else if (response.statusCode == 401) {
+      if (kDebugMode) {
+        print("unauthorized");
+      }
+    } else if (response.statusCode == 404) {
+      if (kDebugMode) {
+        print("Not Found");
+      }
+    }
     return rawImages;
   }
 }
