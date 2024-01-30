@@ -6,25 +6,64 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shutter_stocks_task/data/models/shutterStockModel/shutterstock_model.dart';
+import 'package:shutter_stocks_task/data/repository/shutterstock_repository.dart';
+import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_bloc.dart';
+import 'package:shutter_stocks_task/logic/blocs/shutterstock_bloc/shutterstock_state.dart';
+import 'package:mockito/mockito.dart';
+import 'package:shutter_stocks_task/presentation/pages/home_page.dart';
+import 'package:shutter_stocks_task/res/app_constants.dart';
 
-import 'package:shutter_stocks_task/main.dart';
+class MockShutterStockRepository extends Mock implements ShutterStockRepository {}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+
+  late ShutterStockBloc mockShutterStockBloc;
+  late MockShutterStockRepository shutterStockRepository;
+
+  setUp(() {
+    shutterStockRepository = MockShutterStockRepository();
+    mockShutterStockBloc = ShutterStockBloc(shutterStockRepository);
+
+  });
+
+  tearDown(() {
+    mockShutterStockBloc.close();
+  });
+
+  testWidgets('Find deep items in the long list view', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BlocProvider.value(
+          value: mockShutterStockBloc,
+          child: const HomePage(),
+        ),
+      ),
+    );
+    
+    // Simulate ShutterStockImagesLoaded state
+    when(mockShutterStockBloc.state).thenReturn(
+      ShutterStockImagesLoaded(
+        imagesData: List.generate(70, (index) => Datum(assets: Assets())),
+        imgAssetType: ImgAssetTypes.preview,
+        hasMoreImageData: true
+      )
+    );
+    // Scroll to the 63rd item
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey("ShutterStockImage_63")),
+      500.0,
+      maxScrolls: 6
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Wait for the scroll to settle
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Verify that the image with key "ShutterStockImage_63"
+    expect(find.byKey(const ValueKey("ShutterStockImage_63")), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
   });
 }

@@ -145,6 +145,7 @@ class _HomePageState extends State<HomePage> {
 
                         return imageUrl != null
                           ? Container(
+                            key: Key("ShutterStockImage_$index"),
                             margin: const EdgeInsets.all(8),
                             height: 150,
                             width: 50,
