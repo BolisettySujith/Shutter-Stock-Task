@@ -79,7 +79,7 @@ Implement an app that fetches pictures from the Shutterstock API.
 
 ## Class Diagram
 
-![SS_ClassDiagram](https://github.com/BolisettySujith/Shutter-Stock-Task/assets/73323807/56045b7d-7237-42f1-a04c-2c0a791694a9)
+![finalClassDiagram (1)](https://github.com/BolisettySujith/Shutter-Stock-Task/assets/73323807/b3c15a72-df11-46ac-9d15-dd066ff5988e)
 
 ## App Flow
 
