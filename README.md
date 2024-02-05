@@ -27,7 +27,7 @@ Implement an app that fetches pictures from the Shutterstock API.
 
 ### Project Structure
 
-![projectFolderStructure](https://github.com/BolisettySujith/Shutter-Stock-Task/assets/73323807/665ed3b3-a903-4c50-a5ba-338a89505c40)
+![folder_structure](https://github.com/BolisettySujith/Shutter-Stock-Task/assets/73323807/2f1c438c-f9e7-4297-ae4d-37f25937fc22)
 
 ## Overview
 
