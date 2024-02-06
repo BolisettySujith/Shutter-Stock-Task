@@ -74,7 +74,7 @@ Implement an app that fetches pictures from the Shutterstock API.
     - **Pages** : This directory contains all the pages in the project, like home page, loading page..etc.
     - **Widgets** : This directory contains common widgets that are using in the app pages.
 
-**Res** :
+**Utils** :
 1. This directory contains the common resources used in the project, like app constants, app colors, app urls, and common contant widgets..etc
 
 ## Class Diagram
