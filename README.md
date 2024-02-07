@@ -15,6 +15,7 @@ Implement an app that fetches pictures from the Shutterstock API.
 - Main focus should be on a highly performant app (smooth scrolling & lag-free UI)
 
 
+
 ### **Packages Used**
 - Statemanagement used: **BLoC**
 - Database used: **Hive**
